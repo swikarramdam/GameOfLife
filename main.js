@@ -1,12 +1,12 @@
 const width = 25;
 const height = 20; // width and height dimensions of the board
 
+let interValid = null;
 /**
  * Create a Game of Life instance
  */
 
 const gol = new GameOfLife(width, height);
-
 
 /**
  * create a table and append to the DOM
@@ -35,7 +35,6 @@ for (let h = 0; h < height; h++) {
 }
 document.getElementById("board").append(table);
 
-
 /**
  * Draws every cell from the gol instance into an actual, visible DOM element
  */
@@ -43,42 +42,67 @@ document.getElementById("board").append(table);
 const paint = () => {
   // TODO:
   //   1. For each <td> in the table:
-  //     a. If its corresponding cell in gol instance is alive,
-  //        give the <td> the `alive` CSS class.
-  //     b. Otherwise, remove the `alive` class.
-  //
-  // To find all the <td>s in the table, you might query the DOM for them, or you
-  // could choose to collect them when we create them in createTable.
-  //
-  // HINT:
-  //   https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
-  //   https://developer.mozilla.org/en-US/docs/Web/API/Element/getElementsByTagName
-}
+  for (let i = 0; i < tds.length; i++) {
+    const td = tds[i];
+    const row = Number(td.dataset.row);
+    const col = Number(td.dataset.col);
+    const alive = gol.getCell(row, col);
 
+    if (alive) td.classList.add("alive");
+    else td.classList.remove("alive");
+  }
+};
 
 /**
  * Event Listeners
  */
 
-document.getElementById("board").addEventListener("click", event => {
+document.getElementById("board").addEventListener("click", (event) => {
   // TODO: Toggle clicked cell (event.target) and paint
+  const td = event.target;
+  row = Number(td.dataset.row);
+  col = Number(td.dataset.col);
+
+  if (row >= 0 && col >= 0) {
+    gol.toggleCell(row, col);
+    paint();
+  }
 });
 
-document.getElementById("step_btn").addEventListener("click", event => {
-  // TODO: Do one gol tick and paint
+document.getElementById("step_btn").addEventListener("click", (event) => {
+  gol.tick();
+  paint();
 });
 
-document.getElementById("play_btn").addEventListener("click", event => {
-  // TODO: Start playing by calling `tick` and paint
-  // repeatedly every fixed time interval.
-  // HINT:
-  // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval
+document.getElementById("play_btn").addEventListener("click", (event) => {
+  const playBtn = document.getElementById("play_btn");
+  if (interValid === null) {
+    interValid = setInterval(() => {
+      gol.tick();
+      paint();
+    }, 200);
+    playBtn.textContent = "Pause";
+  } else {
+    clearInterval(interValid);
+    interValid = null;
+    playBtn.textContent = "Play";
+  }
 });
 
-document.getElementById("random_btn").addEventListener("click", event => {
-  // TODO: Randomize the board and paint
+document.getElementById("random_btn").addEventListener("click", (event) => {
+  for (let row = 0; row < gol.height; row++) {
+    for (let col = 0; col < gol.width; col++) {
+      gol.board[row][col] = Math.random() < 0.3 ? 1 : 0;
+    }
+  }
+  paint();
 });
 
-document.getElementById("clear_btn").addEventListener("click", event => {
-  // TODO: Clear the board and paint
+document.getElementById("clear_btn").addEventListener("click", (event) => {
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < width; col++) {
+      gol.board[row][col] = 0;
+    }
+  }
+  paint();
 });

@@ -10,42 +10,59 @@ class GameOfLife {
    */
 
   makeBoard() {
-    // TODO: Create and return an 2D Array 
-    // with `this.heigh` as rows and `this.width` as cols.
-    // For example, given a height of 4 and a width of 3, it will generate:
-    // [
-    //  [0, 0, 0],
-    //  [0, 0, 0],
-    //  [0, 0, 0],
-    //  [0, 0, 0],
-    // ]
+    const board = [];
+    for (let row = 0; row < this.height; row++) {
+      const rowArr = [];
+      for (let col = 0; col < this.width; col++) {
+        rowArr.push(0); //each cell is dead at start
+      }
+      board.push(rowArr);
+    }
+    return board;
   }
 
+  getCell(row, col) {
+    if (row < 0 || row >= this.height || col < 0 || col >= this.width) return 0;
+    return this.board[row][col];
+  }
 
-  /**
-   * Return the amount of living neighbors around a given coordinate.
-   */
+  setCell(value, row, col) {
+    if (row >= 0 && row < this.height && col >= 0 && col < this.width)
+      this.board[row][col] = value;
+  }
+
+  toggleCell(row, col) {
+    if (this.getCell(row, col) === 1) this.setCell(0, row, col);
+    else this.setCell(1, row, col);
+  }
 
   livingNeighbors(row, col) {
-    // TODO: Return the count of living neighbors.
+    let count = 0;
+    for (let r = -1; r <= 1; r++) {
+      for (let c = -1; c <= 1; c++) {
+        if (r === 0 && c === 0) continue; //skips own
+        count += this.getCell(row + r, col + c); //counting the 1 s (live ones)
+      }
+    }
+    return count;
   }
 
-
-  /**
-   * Given the present board, apply the rules to generate a new board
-   */
-  
   tick() {
     const newBoard = this.makeBoard();
-    // TODO: Here is where you want to loop through all the cells
-    // on the existing board and determine, based on it's neighbors,
-    // whether the cell should be dead or alive in the new board 
-    // (the next iteration of the game) 
-    //
-    // You need to:
-    // 1. Count alive neighbors for all cells
-    // 2. Set the next state of all cells in newBoard,
-    // based on their current alive neighbors
+    for (let row = 0; row < this.height; row++) {
+      for (let col = 0; col < this.width; col++) {
+        const alive = this.getCell(row, col);
+        const neighbors = this.livingNeighbors(row, col);
+
+        if (alive) {
+          //value true if exists
+          if (neighbors === 2 || neighbors === 3) newBoard[row][col] = 1;
+          else newBoard[row][col] = 0;
+        } else {
+          if (neighbors === 3) newBoard[row][col] = 1;
+        }
+      }
+    }
     this.board = newBoard;
   }
 }
