@@ -1,5 +1,5 @@
-const width = 25;
-const height = 20; // width and height dimensions of the board
+const width = 30;
+const height = 25; // width and height dimensions of the board
 
 let interValid = null;
 /**
@@ -57,17 +57,17 @@ const paint = () => {
  * Event Listeners
  */
 
-document.getElementById("board").addEventListener("click", (event) => {
-  // TODO: Toggle clicked cell (event.target) and paint
-  const td = event.target;
-  row = Number(td.dataset.row);
-  col = Number(td.dataset.col);
+// document.getElementById("board").addEventListener("click", (event) => {
+//   // TODO: Toggle clicked cell (event.target) and paint
+//   const td = event.target;
+//   row = Number(td.dataset.row);
+//   col = Number(td.dataset.col);
 
-  if (row >= 0 && col >= 0) {
-    gol.toggleCell(row, col);
-    paint();
-  }
-});
+//   if (row >= 0 && col >= 0) {
+//     gol.toggleCell(row, col);
+//     paint();
+//   }
+// });
 
 document.getElementById("step_btn").addEventListener("click", (event) => {
   gol.tick();
@@ -105,4 +105,36 @@ document.getElementById("clear_btn").addEventListener("click", (event) => {
     }
   }
   paint();
+});
+
+let isDrawing = false;
+let drawMode = null;
+
+const board = document.getElementById("board");
+
+board.addEventListener("mousedown", (e) => {
+  if (e.target.tagName === "TD") {
+    isDrawing = true;
+    const r = Number(e.target.dataset.row);
+    const c = Number(e.target.dataset.col);
+    drawMode = gol.getCell(r, c) ? 0 : 1;
+    gol.setCell(drawMode, r, c);
+    paint();
+  }
+});
+
+board.addEventListener("mouseup", () => {
+  isDrawing = false;
+  drawMode = null;
+});
+
+board.addEventListener("mousemove", (e) => {
+  if (isDrawing && e.target.tagName === "TD") {
+    const r = Number(e.target.dataset.row);
+    const c = Number(e.target.dataset.col);
+    if (gol.getCell(r, c) !== drawMode) {
+      gol.setCell(drawMode, r, c);
+      paint();
+    }
+  }
 });

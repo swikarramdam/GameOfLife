@@ -15,6 +15,7 @@ h1 {
 
 #board{
   border-collapse: collapse;
+  background-color: black;
 }
 
 #board td{
@@ -37,14 +38,14 @@ td.alive {
   border-radius: 3px;
   font-size: 0.9em;
   text-align: center;
-  background-color: #2ba6cb;
+  background-color: #2DBA4E;
   color: #fefefe; 
 }
 
 .button:hover, .button:focus {
-  background-color: #258dad;
+  background-color: #2DBA4E;
 }
 
 .button:focus {
-  outline: dashed 1px #2ba6cb;
+  outline: dashed 1px #2DBA4E;
 }
